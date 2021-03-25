@@ -171,6 +171,7 @@ SELECT ho 'Họ', ten 'Tên', tenlop 'Tên lớp', diem 'Điểm', CASE WHEN kqu
 FROM BIENLAI, HOCVIEN, LOPHOC, GIAOVIEN
 WHERE BIENLAI.mahv = HOCVIEN.mahv AND BIENLAI.malh = LOPHOC.malop AND LOPHOC.magv = GIAOVIEN.magv 
 	  AND (GIAOVIEN.hoten = N'Trần Thanh' OR GIAOVIEN.hoten = N'Hồ Nhân')
+	  AND BIENLAI.makh = 'PT197'
 
 -- 2. Cho biết danh sách lớp học và số lượng học viên thực sự của lớp đó.
 SELECT tenlop 'Tên lớp', COUNT(mahv) 'Số lượng học viên'
@@ -197,25 +198,26 @@ WHERE BIENLAI.malh = LOPHOC.malop AND (xeploai = N'KHÁ' OR xeploai = N'GIỎI')
 GROUP BY tenlop
 
 -- 6. Cho biết họ tên những học viên, tên lớp học mà học viên đó theo học và số biên lai tương ứng, các lớp này phải thuộc về các khoá học kết thúc trước 30/5/97.
--- Các lớp kết thúc trước 30/5/97: SELECT malop FROM LOPHOC, KHOAHOC WHERE KHOAHOC.makh = LOPHOC.makh AND kt < '1997-05-30'
-
 SELECT ho 'Họ', ten 'Tên', tenlop 'Tên lớp học', sobl 'Số biên lai'
 FROM BIENLAI, HOCVIEN, LOPHOC
-WHERE BIENLAI.mahv = HOCVIEN.mahv AND BIENLAI.malh = LOPHOC.malop AND malh IN (SELECT malop FROM LOPHOC, KHOAHOC WHERE KHOAHOC.makh = LOPHOC.makh AND kt < '1997-05-30')
+WHERE BIENLAI.mahv = HOCVIEN.mahv AND BIENLAI.malh = LOPHOC.malop
+	  AND malh IN (SELECT malop FROM LOPHOC, KHOAHOC WHERE KHOAHOC.makh = LOPHOC.makh AND kt < '1997-05-30')
 
 -- 7. Cho biết tên những lớp học có sỉ số thực sự vượt sĩ số dự kiến
-SELECT tenlop 'Tên lớp', COUNT(mahv) 'Sỉ số thực'
+SELECT tenlop 'Tên lớp'
 FROM LOPHOC, BIENLAI
 WHERE BIENLAI.malh = LOPHOC.malop
 GROUP BY tenlop, sisodk
 HAVING COUNT(mahv) > sisodk
 
 -- 8. Cho biết tên và mã số các lớp học có sỉ số thực sự ít nhất.
-SELECT TOP 1 malop 'Mã lớp', tenlop 'Tên lớp', COUNT(mahv) AS siso
+SELECT TOP 1 COUNT(mahv) FROM bienlai GROUP BY malh ORDER BY malh DESC -- Số học viên ít nhất trong 1 lớp.
+
+SELECT malop 'Mã lớp', tenlop 'Tên lớp'
 FROM LOPHOC, BIENLAI
 WHERE BIENLAI.malh = LOPHOC.malop
 GROUP BY malop, tenlop
-ORDER BY siso
+HAVING COUNT(mahv) = (SELECT TOP 1 COUNT(mahv) FROM bienlai GROUP BY malh ORDER BY malh DESC)
 
 -- 9. Cho biết họ tên, địa chỉ của những học viên là giáo viên đồng thời là lớp trưởng.
 SELECT ho 'Họ', ten 'Tên', dchi 'Địa chỉ'
@@ -266,9 +268,9 @@ GROUP BY tenlop
 -- 16. Cho biết mã số và họ tên những học viên ở lại lớp ít nhất 1 lần.
 SELECT BIENLAI.mahv 'Mã số', ho 'Họ', ten 'Tên', COUNT(kqua) '(không đậu)'
 FROM BIENLAI, HOCVIEN
-WHERE BIENLAI.mahv = HOCVIEN.mahv
+WHERE BIENLAI.mahv = HOCVIEN.mahv AND (kqua) = 0
 GROUP BY ho, ten, BIENLAI.mahv, kqua
-HAVING kqua = 0
+HAVING COUNT(kqua) >= 1
 
 -- 17. Cho biết các học viên có Họ "Nguyễn".
 SELECT *
@@ -289,7 +291,11 @@ WHERE BIENLAI.mahv = HOCVIEN.mahv
 GROUP BY ho, ten
 HAVING COUNT(makh) = COUNT(CASE WHEN xeploai = N'GIỎI' THEN 1 ELSE NULL END)
 
--- 20. Cho biết 3 số biên lai của khoá "PT197" có điểm xếp cao nhất".
+-- 20. Cho biết 3 số biên lai của khoá "PT197" có điểm xếp cao nhất.
+SELECT TOP 3 sobl 'Số biên lai'
+FROM BIENLAI
+WHERE makh = 'PT197' AND diem = (SELECT TOP 1 diem FROM BIENLAI WHERE makh = 'PT197' ORDER BY diem DESC)
+
 SELECT TOP 3 sobl 'Số biên lai'
 FROM BIENLAI
 WHERE makh = 'PT197'
