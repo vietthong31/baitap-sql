@@ -206,11 +206,18 @@ HAVING COUNT(ma_nvien) >= 1
 -- Mã đề án San pham X:
 SELECT mada FROM dean WHERE tenda = N'Sản phẩm X'
 -- Mã nhân viên tham gia đề án San pham X với thời gian làm việc trên 10 giờ/ tuần:
+-- Cách 1:
 SELECT ma_nvien FROM phancong WHERE soda = (SELECT mada FROM dean WHERE tenda = N'Sản phẩm X') AND thoigian > 10
+-- Cách 2:
+SELECT ma_nvien FROM phancong, dean WHERE phancong.soda = dean.mada AND tenda = N'Sản phẩm X' AND thoigian > 10
 
+-- Tên nhân viên -làm việc phòng 5 -tham gia đề án San pham X -làm việc >10h/tuần
 SELECT honv + ' ' + tenlot + ' ' + tennv 'Tên nhân viên'
 FROM nhanvien
 WHERE phg = 5 AND manv IN (SELECT ma_nvien FROM phancong WHERE soda = (SELECT mada FROM dean WHERE tenda = N'Sản phẩm X') AND thoigian > 10)
+
+SELECT honv, tenlot, tennv FROM nhanvien
+WHERE phg = 5 AND manv IN (SELECT ma_nvien FROM phancong, dean WHERE phancong.soda = dean.mada AND tenda = N'Sản phẩm X' AND thoigian > 10)
 
 -- 9. Danh sách những nhân viên (HONV, TENNV) có cùng tên với người thân.
 SELECT tennv 'Tên nhân viên'
@@ -222,6 +229,9 @@ SELECT honv 'Họ', tennv 'Tên'
 FROM nhanvien
 WHERE ma_nql = (SELECT manv FROM nhanvien WHERE CONCAT(honv, ' ', tenlot, ' ', tennv) = 'Nguyen Thanh Tung')
 
+SELECT honv, tennv
+FROM nhanvien
+WHERE ma_nql = (select manv from nhanvien where honv = 'Nguyen' and tenlot = 'Thanh' and tennv = 'Tung')
 -- 11. Với mỗi đề án, liệt kê tên đề án (TENDA) và tổng số giờ làm việc của tất cả các nhân viên tham dự đề án đó.
 SELECT tenda 'Tên đề án', SUM(thoigian) 'Tổng thời gian'
 FROM dean, phancong
