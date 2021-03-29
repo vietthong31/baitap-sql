@@ -180,10 +180,9 @@ WHERE BIENLAI.malh = LOPHOC.malop
 GROUP BY tenlop
 
 -- 3. Cho biết họ tên, NTNS, địa chỉ của học viên có điểm cao nhất trong khoá có mã số "PT297"
-SELECT TOP 1 ho 'Họ', ten 'Tên', ntns 'NTNS', dchi 'Địa chỉ'
+SELECT ho 'Họ', ten 'Tên', ntns 'NTNS', dchi 'Địa chỉ'
 FROM HOCVIEN, BIENLAI
-WHERE HOCVIEN.mahv = BIENLAI.mahv AND BIENLAI.makh = 'PT297'
-ORDER BY diem DESC
+WHERE HOCVIEN.mahv = BIENLAI.mahv AND diem = (SELECT TOP 1 diem FROM BIENLAI ORDER BY diem DESC) AND BIENLAI.makh = 'PT297'
 
 -- 4. Cho biết tên các lớp học và điểm trung bình, điểm cao nhất của tất cả học viên trong lớp.
 SELECT tenlop 'Tên lớp', AVG(diem) 'Điểm trung bình', MAX(diem) 'Điểm cao nhất'
