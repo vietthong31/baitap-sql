@@ -4,8 +4,8 @@ Trình bày liệt kê tất cả các trường hợp xảy ra sau mệnh đề
 
 Danh sách chọn trong câu lệnh SELECT được dùng để chỉ định các trường, biểu thường cần hiển thị trong cột của kết quả truy vấn. Các trường, biểu thức này ngay sau từ khoá SELECT, cách sau bởi dấu phẩy.
 
-1. Chọn tất cả cột trong bảng: dùng kí tự _ <br />
-   `SELECT _ FROM nhanvien`
+1. Chọn tất cả cột trong bảng: dùng kí tự * <br />
+   `SELECT * FROM nhanvien`
 2. Chọn các trường trong một bảng:<br />
    `SELECT hoten, ngaysinh, dchi FROM nhanvien`
 3. Dùng cấu trúc CASE để hiển thị kết quả khác nhau dựa vào dữ liệu. <br />

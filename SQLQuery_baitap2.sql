@@ -291,6 +291,7 @@ WHERE manv IN
 */
 
 
+
 -- 19. Cho biết họ tên nhân viên (HONV, TENNV) có mức lương trên mức lương trung bình của phòng "Nghien cuu".
 -- Mức lương trung bình phòng nghiên cứu:
 SELECT AVG(luong) FROM nhanvien WHERE phg = (SELECT maphg FROM phongban WHERE tenphg = N'Nghiên cứu')
@@ -307,7 +308,9 @@ GROUP BY tenphg
 HAVING AVG(luong) > 30000
 
 -- 21. Cho biết họ tên nhân viên (HONV, TENNV) và tên các đề án mà nhân viên ấy tham gia nếu có.
-
+SELECT honv, tennv, tenda
+FROM phancong, dean, nhanvien
+WHERE phancong.soda = dean.mada AND nhanvien.manv = phancong.ma_nvien
 
 -- 22. Cho biết phòng ban họ tên trưởng phòng của phòng ban có đông nhân viên nhất.
 -- Số nhân viên đông nhất (trong 1 phòng):
